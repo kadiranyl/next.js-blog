@@ -13,6 +13,7 @@
     "dashify": "^2.0.0",
     "firebase": "^9.9.1",
     "firebase-admin": "^11.0.0",
+    "formidable": "^2.0.1",
     "luxon": "^3.0.1",
     "next": "12.2.3",
     "react": "18.2.0",
