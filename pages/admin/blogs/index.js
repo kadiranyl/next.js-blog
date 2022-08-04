@@ -104,7 +104,6 @@ export default function AdminBlogs() {
       }, () => {
         getDownloadURL(uploadTask.snapshot.ref)
         .then((url) => {
-          console.log(id);
 
           updateDoc(doc(firestore, 'blogs', id), {
             image: url
@@ -132,7 +131,6 @@ export default function AdminBlogs() {
     e.preventDefault() //Normalde submit edince ? linkine atıyor ve sayfayı yeniliyor, yenilememesi için bu gerekli
 
     const id = allBlogsArray.length+1
-    console.log(id);
     const date = new Date()
     
 
