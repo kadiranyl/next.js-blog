@@ -61,16 +61,16 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     
-    if (auth.currentUser === null && adminRequired.includes(router.pathname)) {
-      router.push('/')
-    } else if (!(isAdmin !== null) && adminRequired.includes(router.pathname)) {
-      if (isAdmin === false) {
-        router.push('/')
-      }
-    }
+    // if (auth.currentUser === null && adminRequired.includes(router.pathname)) {
+    //   router.push('/')
+    // } else if (!(isAdmin !== null) && adminRequired.includes(router.pathname)) {
+    //   if (isAdmin === false) {
+    //     router.push('/')
+    //   }
+    // }
 
 
-  }, [isAdmin]) 
+  }, [auth]) 
 
     return (
       <AuthContextProvider>

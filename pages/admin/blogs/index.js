@@ -28,6 +28,7 @@ export default function AdminBlogs() {
   const [blogContent, setBlogContent] = useState('')
   const [blogCategory, setBlogCategory] = useState('')
   const [blogsArray, setBlogsArray] = useState([])
+  const [allBlogsArray, setAllBlogsArray] = useState([])
   const [editBlogId, setEditBlogId] = useState('')
   const [editBlogTitle, setEditBlogTitle] = useState('')
   const [editBlogShortContent, setEditBlogShortContent] = useState('')
@@ -44,7 +45,6 @@ export default function AdminBlogs() {
 
 
   useEffect(() => {
-    console.log(progress);
     if (progress > 0 && progress < 100) {
       setShowProgress(true)
     } else {
@@ -52,6 +52,21 @@ export default function AdminBlogs() {
     }
   }, [progress])
 
+
+
+  const getAllBlogs = () => {
+    getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate", "desc")))
+      .then((data) => {
+        setAllBlogsArray(data.docs.map((item) => {
+          return { ...item.data(), id: item.id }
+        }));
+      })
+  }
+  useEffect(() => {
+    if (user) {
+      getAllBlogs();
+    }
+  }, [])
 
 
 
@@ -89,6 +104,8 @@ export default function AdminBlogs() {
       }, () => {
         getDownloadURL(uploadTask.snapshot.ref)
         .then((url) => {
+          console.log(id);
+
           updateDoc(doc(firestore, 'blogs', id), {
             image: url
           })
@@ -114,7 +131,8 @@ export default function AdminBlogs() {
   const addBlog = (e) => {
     e.preventDefault() //Normalde submit edince ? linkine atıyor ve sayfayı yeniliyor, yenilememesi için bu gerekli
 
-    const id = blogsArray.length + 1
+    const id = allBlogsArray.length+1
+    console.log(id);
     const date = new Date()
     
 
@@ -137,17 +155,21 @@ export default function AdminBlogs() {
     setBlogContent('')
     setBlogCategory('')
 
+
+
     getBlogs() //Yeni not eklendiğinde bu fonksiyon çalışacak
 
-
-
+    
     getDocs(query(collection(firestore, 'blogs'), where("id", "==", id)))
-      .then((data) => {
-        data.docs.map((item) => 
-          blogImage !== null && (
-            addBlogThumb(blogImage, item.id)
-          )
-        )})
+    .then((data) => {
+      data.docs.map((item) => 
+        blogImage !== null && (
+          addBlogThumb(blogImage, item.id)
+        )
+      )})
+
+
+
 
 
 
