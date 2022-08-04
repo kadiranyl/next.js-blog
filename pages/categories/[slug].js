@@ -199,14 +199,14 @@ export default function Category() {
                 </Link>
                 <p className="text-gray-400 text-sm mb-6">{blog.shortContent && blog.shortContent.length > 200 ? blog.shortContent.slice(0, 200) + "..." : blog.shortContent}</p>
                 <div className="flex justify-start rounded-lg items-center gap-3">
-                <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
-                  <a className='flex items-center'>
-                    <Image width="32px" height="32px" src={fireUsers.find(user => user.uid === blog.author).imageUrl} className="rounded-full cursor-pointer" alt="" />
+                <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
+                  <a className="flex items-center">
+                    <Image width="32px" height="32px" src={fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).imageUrl : "/img/defaultUser.jpeg"} className="rounded-full cursor-pointer" alt="" />
                   </a>
                 </Link>
                 <div className="flex flex-col justify-center">
-                  <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
-                    <a className="text-sm font-semibold text-gray-600">{fireUsers.find(user => user.uid === blog.author).displayName}</a>
+                  <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
+                    <a className="text-sm font-semibold text-gray-600">{fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).displayName : "Deleted Account"}</a>
                   </Link>
                   <span className="text-xs text-gray-400">{dayjs.unix(blog.createdAt.seconds).fromNow()}</span>
                 </div>

@@ -66,7 +66,7 @@ export default function BlogDetails() {
       return (
           <>
           <Head>
-            <title>{blog.title} | {fireUsers.find(user => user.uid === blog.author).displayName}</title>
+            <title>{blog.title} | {fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).displayName : "Deleted Account"}</title>
           </Head>
           <div className='w-[60%] mx-auto flex flex-col items-center my-16 gap-1'>
               <Image width="800px" height="400px" src={blog.image} className="rounded object-cover" alt="" />
@@ -84,16 +84,16 @@ export default function BlogDetails() {
               </div>
 
               <div className='w-[60%] py-8 gap-6 flex items-center justify-start px-8 mt-16 bg-gray-100 rounded-xl'>
-                <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
-                  <Image width="64px" height="64px" src={fireUsers.find(user => user.uid === blog.author).imageUrl} alt="" className='rounded-xl cursor-pointer' />
+                <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
+                  <Image width="64px" height="64px" src={fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).imageUrl : "/img/defaultUser.jpeg"} alt="" className='rounded-xl cursor-pointer' />
                 </Link>
                 <div className='flex-1 flex flex-col justify-center gap-1'>
-                  <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
-                    <a className='text-xl font-bold'>{fireUsers.find(user => user.uid === blog.author).displayName}</a>
+                  <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
+                    <a className='text-xl font-bold'>{fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).displayName : "Deleted Account"}</a>
                   </Link>
-                  <span className='text-sm text-gray-400'>{fireUsers.find(user => user.uid === blog.author).biography}</span>
+                  <span className='text-sm text-gray-400'>{fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).biography : ""}</span>
                   <div className='flex items-center gap-4 mt-5 w-full justify-center'>
-                    {fireUsers.find(user => user.uid === blog.author).socialMedia.facebook && (
+                    {fireUsers.find(user => user.uid === blog.author) && fireUsers.find(user => user.uid === blog.author).socialMedia.facebook && (
                       <Link href={"https://www.facebook.com/" + fireUsers.find(user => user.uid === blog.author).socialMedia.facebook}>
                         <a className='cursor-pointer transition hover:text-gray-500' target="_blank">
                           <FaFacebook size={18} />
@@ -101,7 +101,7 @@ export default function BlogDetails() {
                       </Link>
                     )}
                     
-                    {fireUsers.find(user => user.uid === blog.author).socialMedia.instagram && (
+                    {fireUsers.find(user => user.uid === blog.author) && fireUsers.find(user => user.uid === blog.author).socialMedia.instagram && (
                     <Link href={"https://www.instagram.com/" + fireUsers.find(user => user.uid === blog.author).socialMedia.instagram}>
                       <a className='cursor-pointer transition hover:text-gray-500' target="_blank">
                         <FaInstagram size={18} />
@@ -109,7 +109,7 @@ export default function BlogDetails() {
                     </Link>
                     )}
 
-                    {fireUsers.find(user => user.uid === blog.author).socialMedia.twitter && (
+                    {fireUsers.find(user => user.uid === blog.author) && fireUsers.find(user => user.uid === blog.author).socialMedia.twitter && (
                     <Link href={"https://www.twitter.com/" + fireUsers.find(user => user.uid === blog.author).socialMedia.twitter}>
                       <a className='cursor-pointer transition hover:text-gray-500' target="_blank">
                         <FaTwitter size={18} />
