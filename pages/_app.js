@@ -20,6 +20,7 @@ function MyApp({ Component, pageProps }) {
 
   const { user } = useAuth()
 
+  const authRequired = ['/profile-settings']
   const adminRequired = ['/admin', '/admin/categories', '/admin/blogs']
 
   const [fireUser, setFireUser] = useState(null)
@@ -59,7 +60,10 @@ function MyApp({ Component, pageProps }) {
 
 
   useEffect(() => {
-    if (!(isAdmin !== null) && adminRequired.includes(router.pathname) && user !== null) {
+    
+    if (auth.currentUser === null && adminRequired.includes(router.pathname)) {
+      router.push('/')
+    } else if (!(isAdmin !== null) && adminRequired.includes(router.pathname)) {
       if (isAdmin === false) {
         router.push('/')
       }
