@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { GoUnverified } from 'react-icons/go'
 import { HiOutlineLogout } from 'react-icons/hi'
 import Image from "next/image";
+import Head from "next/head";
 
 export default function Profile({ isAdmin, fireUser }) {
   const { update, socialMediaUpdate, user, handlePassUpdate, logout, handleVerification, uploadProfileImage } = useAuth()
@@ -62,14 +63,13 @@ const getBlogs = () => {
   }, [])
 
   const handleSubmit = async (e) => {
-    e.preventDefault("/")
+    e.preventDefault('')
 
     await update({
         displayName,
         biography
     })
 
-    router.push("/profile-settings")
   }
 
   const handleSocialMediaSubmit = async (e) => {
@@ -104,6 +104,9 @@ const getBlogs = () => {
     if (user !== null) {
   return (
     <>
+        <Head>
+            <title>Profile Settings</title>
+        </Head>
         <div className={"h-" + (isAdmin ? "[85vh]" : "[90vh]") + " w-3/4 mx-auto flex flex-col items-center justify-start py-10 gap-4"}>
             {!user.emailVerified && (
                 <button onClick={handleVerification} className="mb-8 bg-orange-400 text-white text-sm w-96 py-4 rounded-lg">

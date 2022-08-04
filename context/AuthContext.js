@@ -183,17 +183,16 @@ export const AuthContextProvider = ({ children }) => {
     getUser()
   }, [auth])
 
-  const update = async ({ displayName, photoURL, biography, facebook, instagram, twitter }) => {
+  const update = async ({ displayName, biography}) => {
 
     try {
-      await updateProfile(auth.currentUser, { displayName: displayName, photoURL: photoURL })
+      await updateProfile(auth.currentUser, { displayName: displayName })
 
 
       const account = await getDoc(doc(firestore, "accounts", auth.currentUser.uid))
 
       updateDoc(doc(firestore, 'accounts', auth.currentUser.uid), {
         displayName,
-        imageUrl: photoURL,
         link: slugify(displayName.toLocaleLowerCase()) + "-" + account.data().id,
         biography
       })
@@ -381,6 +380,7 @@ export const AuthContextProvider = ({ children }) => {
               imageUrl: photoURL,
             })
             updateProfile(auth.currentUser, { displayName: user.displayName, photoURL })
+            router.reload()
           })
       })
 

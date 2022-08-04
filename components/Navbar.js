@@ -49,7 +49,7 @@ const NavbarComp = ({ isAdmin, fireUser }) => {
                     <div className='flex items-center justify-start gap-3'>
                       <Link href={"/users/" + fireUser.link}>
                         {user.photoURL && (
-                          <Image width="40px" height="40px" src={user.photoURL} alt="" className="cursor-pointer flex-none rounded-full" onClick={() => setProfileDropdown(false) } />
+                          <Image width="40px" height="40px" src={user.photoURL} alt="" className="cursor-pointer object-cover flex-none rounded-full" onClick={() => setProfileDropdown(false) } />
                         )}
                       </Link>
                       <div className='flex flex-col justify-center'>

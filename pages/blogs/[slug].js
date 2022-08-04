@@ -68,7 +68,7 @@ export default function BlogDetails() {
           <Head>
             <title>{blog.title} | {fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).displayName : "Deleted Account"}</title>
           </Head>
-          <div className='w-[60%] mx-auto flex flex-col items-center my-16 gap-1'>
+          <div className='w-[80%] md:w-[60%] mx-auto flex flex-col items-center my-16 gap-1'>
               <Image width="800px" height="400px" src={blog.image} className="rounded object-cover" alt="" />
               <div className='flex items-center justify-center gap-3 text-gray-400 text-sm mt-9'>
                 <Link href={categoriesArray.find(category => category.id === blog.category) ? "/categories/" + categoriesArray.find(category => category.id === blog.category).link : "#"}>
@@ -85,9 +85,9 @@ export default function BlogDetails() {
                 <div className='text-gray-500 mt-6 text-left text-sm blog-content' dangerouslySetInnerHTML={{ __html: blog.content }}></div>
               </div>
 
-              <div className='w-[60%] py-8 gap-6 flex items-center justify-start px-8 mt-16 bg-gray-100 rounded-xl'>
+              <div className='w-full flex-col md:flex-row md:w-[60%] py-8 gap-6 flex items-center justify-start px-8 mt-16 bg-gray-100 rounded-xl'>
                 <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
-                  <Image width="64px" height="64px" src={fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).imageUrl : "/img/defaultUser.jpeg"} alt="" className='rounded-xl cursor-pointer' />
+                  <Image width="72px" height="72px" src={fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).imageUrl : "/img/defaultUser.jpeg"} alt="" className='rounded-xl object-cover cursor-pointer' />
                 </Link>
                 <div className='flex-1 flex flex-col justify-center gap-1'>
                   <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
