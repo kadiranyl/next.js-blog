@@ -70,8 +70,8 @@ export default function User() {
             </Head>
             <div className='w-[80%] md:w-[40%] mx-auto flex flex-col items-center gap-16 justify-center my-6'>
                 <div className='flex items-center justify-start gap-8 w-full'>
-                  <Image width="256px" height="256px" src={user.imageUrl} alt="" className='flex-none object-cover rounded-full' />
-                  <div className='flex flex-col justify-center'>
+                  <Image width="96px" height="96px" src={user.imageUrl} alt="" className='object-cover flex-none rounded-full' />
+                  <div className='flex flex-col justify-center max-w-[70%]'>
                     <h2 className='text-xl font-bold'>{user.displayName}</h2>
                     <p className='text-sm text-gray-400'>{user.biography}</p>
                     <div className='flex items-center justify-center gap-4 mt-5'>

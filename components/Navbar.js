@@ -40,13 +40,17 @@ const NavbarComp = ({ isAdmin, fireUser }) => {
         {user ? (
             <div className='flex relative items-center justify-end w-full'>
                 <button onClick={() => setProfileDropdown(!profileDropdown) }>
-                  <Image width="32px" height="32px" className="object-cover rounded-full cursor-pointer" src={user.photoURL} alt="" />
+                  {user.photoURL && (
+                    <Image width="32px" height="32px" className="object-cover rounded-full cursor-pointer" src={user.photoURL} alt="" />
+                  )}
                 </button>
                 {profileDropdown && (
                   <div className='absolute top-10 z-50 bg-white shadow-lg w-fit gap-3 py-12 text-gray-400 text-sm font-medium px-6 justify-center rounded-md right-0 flex flex-col'>
                     <div className='flex items-center justify-start gap-3'>
                       <Link href={"/users/" + fireUser.link}>
-                        <Image width="40px" height="40px" src={user.photoURL} alt="" className="cursor-pointer flex-none rounded-full" onClick={() => setProfileDropdown(false) } />
+                        {user.photoURL && (
+                          <Image width="40px" height="40px" src={user.photoURL} alt="" className="cursor-pointer flex-none rounded-full" onClick={() => setProfileDropdown(false) } />
+                        )}
                       </Link>
                       <div className='flex flex-col justify-center'>
                         <Link href={"/users/" + fireUser.link}>
