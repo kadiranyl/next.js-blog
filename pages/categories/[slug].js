@@ -1,29 +1,38 @@
 import { useRouter } from 'next/router'
-import { app, database } from '../../firebaseClient';
+import { firestore } from '../../lib/firebase';
 import Link from 'next/link';
 import { useState, useEffect } from "react";
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import BounceLoader from "react-spinners/BounceLoader";
+import Head from 'next/head';
+
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { useAuth } from '../../context/AuthContext';
+import { GrSearch } from 'react-icons/gr'
+import Image from 'next/image';
+
+// import 'dayjs/locale/tr'
 
 export default function Category() {
+  dayjs.extend(relativeTime)
+
+  // dayjs.locale('tr') 
+
+  const { fireUsers, categoriesArray } = useAuth()
+  
 
     //Blogları çek
-    const [category, setCategory] = useState('')
-    const [blogs, setBlogs] = useState([])
-    
+    const [category, setCategory] = useState('')    
       
     //kullanıcının routerını al ve slug'a ata
     const router = useRouter()
     const { slug } = router.query
 
 
-
-
-
-
     const [blogsArray, setBlogsArray] = useState([])
     const [oldFilteredBlogsArray, setOldFilteredBlogsArray] = useState([])
     const [filteredBlogsArray, setFilteredBlogsArray] = useState([])
-    const [categoriesArray, setCategoriesArray] = useState([])
   
     const [filter, setFilter] = useState('newest')
     const [search, setSearch] = useState('')
@@ -31,42 +40,37 @@ export default function Category() {
   
   
     //Kategorileri al
-    const getCategories = () => {
-      getDocs(collection(database, 'categories'))
-        .then((data) => {
-          setCategoriesArray(data.docs.map((item) => {
-            return { ...item.data(), id: item.id }
-          }));
-        })
-    }
-    useEffect(() => {
-      getCategories();
-    }, [])
+    
   
   
   
     //Blogları al
     const getBlogs = () => {
-        getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+        if (category !== '') {
+          getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
         .then((data) => {
           setFilteredBlogsArray(data.docs.reverse().map((item) => {
             return { ...item.data(), id: item.id }
           }));
         })
   
-        getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+        getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
         .then((data) => {
           setBlogsArray(data.docs.reverse().map((item) => {
             return { ...item.data(), id: item.id }
           }));
         })
+        }
     }
+
+    
     useEffect(() => {
       getBlogs();
 
-      blogsArray.filter(name => name.category == category.name && setBlogs([name]))
-      console.log(blogs);
-    }, [])
+      if (category !== '') {
+        blogsArray.filter(name => name.category == category.name && setBlogsArray([name]))
+      }
+    }, [category])
   
   
   
@@ -80,12 +84,14 @@ export default function Category() {
           setOldFilteredBlogsArray([])
           setFilteredBlogsArray([])
   
-          getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
-          .then((data) => {
-            setOldFilteredBlogsArray(data.docs.map((item) => {
-              return { ...item.data(), id: item.id }
-            }));
-          })
+          if (category !== '') {
+            getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
+            .then((data) => {
+              setOldFilteredBlogsArray(data.docs.map((item) => {
+                return { ...item.data(), id: item.id }
+              }));
+            })
+          }
   
           setFilteredBlogsArray(oldFilteredBlogsArray.reverse())
   
@@ -95,12 +101,14 @@ export default function Category() {
           setFilteredBlogsArray([])
           setOldFilteredBlogsArray([])
   
-          getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
-          .then((data) => {
-            setOldFilteredBlogsArray(data.docs.map((item) => {
-              return { ...item.data(), id: item.id }
-            }));
-          })
+          if (category !== '') {
+            getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
+            .then((data) => {
+              setOldFilteredBlogsArray(data.docs.map((item) => {
+                return { ...item.data(), id: item.id }
+              }));
+            })
+          }
   
           setFilteredBlogsArray(oldFilteredBlogsArray)
   
@@ -117,7 +125,7 @@ export default function Category() {
     //Kullanıcı siteye ilk girdiğinde fonksiyon çalışsın diye
     useEffect(() => {
       changeFilter(filter)
-    }, [])
+    }, [category])
   
   
   
@@ -148,10 +156,14 @@ export default function Category() {
 
 
 
-    if (categoriesArray.map(blog => blog.link == slug) && category) {
+    if (categoriesArray.map(blog => blog.link == slug) && category && fireUsers !== null) {
   
       return (
-        <div className="w-3/4 mx-auto flex justify-between py-8 gap-12 flex-col-reverse md:flex-row md:h-screen">
+        <>
+        <Head>
+          <title>{category.name} | Acatay</title>
+        </Head>
+        <div className="w-3/4 mx-auto flex justify-between py-8 gap-12 flex-col-reverse md:flex-row md:h-[85vh]">
         <div className="flex flex-col gap-6 md:gap-12 w-full relative md:overflow-y-scroll md:w-3/4">
           <div className="flex flex-col bg-white justify-center gap-4 py-5">
             <select className="w-fit px-4 bg-gray-100 rounded-lg py-2 focus:outline-none" onChange={(e) => changeFilter(e.target.value)}>
@@ -161,44 +173,44 @@ export default function Category() {
               <option value="oldest">
                   Sort by Oldest
               </option>
-              <option value="popular">
+              {/* <option value="popular">
                   Sort by Popular
-              </option>
+              </option> */}
             </select>
   
             <span className="text-gray-800"><b>{filteredBlogsArray.length}</b> {filteredBlogsArray.length === 1 ? "blog" : "blogs"} found from <b>{category.name}</b></span>
           </div>
   
   
-          {blogs.length>0 ?
+          {filteredBlogsArray.length>0 ?
           <div className="flex flex-col gap-9">
           
-          {blogs.map(blog => (
+          {filteredBlogsArray.map(blog => (
             <div className="flex justify-between gap-9 items-center" key={blog.id}>
               <Link href={"/blogs/" + blog.link}>
                 <a className="w-24 md:w-48 flex items-center justify-center h-48">
-                  <img src={"/" + blog.image} className="object-cover rounded-xl h-24 w-full md:h-full" />
+                  <Image width="200px" height="200px" src={blog.image} className="object-cover rounded-xl" alt="" />
                 </a>
               </Link>
               <div className="flex flex-col w-[70%] justify-center">
-                <span className="text-blue-500 text-xs mb-2">{blog.category}</span>
+              <span className="text-black border-2 font-bold uppercase border-black w-fit px-3 py-[5px] text-xs mb-2">{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</span>
                 <Link href={"/blogs/" + blog.link}>
                   <a className="text-2xl font-bold mb-1">{blog.title}</a>
                 </Link>
                 <p className="text-gray-400 text-sm mb-6">{blog.shortContent && blog.shortContent.length > 200 ? blog.shortContent.slice(0, 200) + "..." : blog.shortContent}</p>
                 <div className="flex justify-start rounded-lg items-center gap-3">
-                  <Link href="#">
-                    <a>
-                      <img src="https://via.placeholder.com/520x520" className="w-8 h-8 rounded-full cursor-pointer" />
-                    </a>
+                <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
+                  <a className='flex items-center'>
+                    <Image width="32px" height="32px" src={fireUsers.find(user => user.uid === blog.author).imageUrl} className="rounded-full cursor-pointer" alt="" />
+                  </a>
+                </Link>
+                <div className="flex flex-col justify-center">
+                  <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
+                    <a className="text-sm font-semibold text-gray-600">{fireUsers.find(user => user.uid === blog.author).displayName}</a>
                   </Link>
-                  <div className="flex flex-col justify-center">
-                    <Link href="#">
-                      <a className="text-sm font-semibold text-gray-600">Kadir Yılmaz</a>
-                    </Link>
-                    <span className="text-xs text-gray-400">{blog.date}</span>
-                  </div>
+                  <span className="text-xs text-gray-400">{dayjs.unix(blog.createdAt.seconds).fromNow()}</span>
                 </div>
+              </div>
               </div>
             </div>
           ))}
@@ -215,8 +227,8 @@ export default function Category() {
         
         <sidebar className="w-full flex flex-col gap-14 md:w-1/4">
           <div className="w-full h-10 relative flex items-center">
-            <i className="fa-solid fa-magnifying-glass absolute left-4"></i>
-            <input type="text" className="w-full h-full py-4 pl-11 bg-gray-100 rounded-xl focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <GrSearch className="absolute left-4 w-4" />
+            <input type="text" className="w-full h-full py-4 pl-11 bg-gray-100 text-sm pr-2 rounded-xl focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           
           <div className="">
@@ -254,7 +266,7 @@ export default function Category() {
               {categoriesArray.map(category =>
                 <Link href={"/categories/" + category.link} key={category.id}>
                   <a className="flex items-center gap-2 group">
-                    <img src={"/" + category.image} alt="" className="w-5" />
+                    <Image width="20px" height="20px" src={category.image} alt="" className="object-cover" />
                     <span className="text-sm text-gray-600 group-hover:text-gray-900">{category.name}</span>
                   </a> 
                 </Link>
@@ -263,11 +275,14 @@ export default function Category() {
           </div>
         </sidebar>
       </div>
+        </>
       )
 
     } else if(categoriesArray.map(blog => blog.link == slug) && !category) {
       return (
-        <div>Loading...</div>
+        <div className='h-screen absolute top-0 left-0 bg-white w-full flex items-center justify-center'>
+          <BounceLoader color="black" loading="true" size={50} />
+        </div>
       )
     }
     //Blogları tek tek gez router ile eşleşirse kullanıcı var olan bir sayfadadır

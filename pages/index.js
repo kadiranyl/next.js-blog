@@ -1,48 +1,49 @@
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import Link from "next/link";
-import { app, database } from '../firebaseClient';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { app, firestore, auth } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
+import { collection, getDocs, orderBy, query, doc, getDoc } from 'firebase/firestore';
+
+import dayjs from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime'
+// import 'dayjs/locale/tr'
+import { GrSearch } from 'react-icons/gr'
+import Image from "next/image";
 
 
-export default function Home() {
+export default function Home(isAdmin) {
+
+  dayjs.extend(relativeTime)
+
+  // dayjs.locale('tr') 
+
+
+  const { fireUsers, categoriesArray } = useAuth()
 
   const [blogsArray, setBlogsArray] = useState([])
   const [oldFilteredBlogsArray, setOldFilteredBlogsArray] = useState([])
   const [filteredBlogsArray, setFilteredBlogsArray] = useState([])
-  const [categoriesArray, setCategoriesArray] = useState([])
 
   const [filter, setFilter] = useState('newest')
   const [search, setSearch] = useState('')
 
 
 
-  //Kategorileri al
-  const getCategories = () => {
-    getDocs(collection(database, 'categories'))
-      .then((data) => {
-        setCategoriesArray(data.docs.map((item) => {
-          return { ...item.data(), id: item.id }
-        }));
-      })
-  }
-  useEffect(() => {
-    getCategories();
-  }, [])
-
-
 
   //Blogları al
   const getBlogs = () => {
-      getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+    //desc tersten sıralaması için
+      getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate", "desc")))
       .then((data) => {
-        setFilteredBlogsArray(data.docs.reverse().map((item) => {
+        setFilteredBlogsArray(data.docs.map((item) => {
           return { ...item.data(), id: item.id }
         }));
       })
 
-      getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+      getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate", "desc")))
       .then((data) => {
-        setBlogsArray(data.docs.reverse().map((item) => {
+        setBlogsArray(data.docs.map((item) => {
           return { ...item.data(), id: item.id }
         }));
       })
@@ -50,7 +51,6 @@ export default function Home() {
   useEffect(() => {
     getBlogs();
   }, [])
-
 
 
   //Filtreleme
@@ -63,7 +63,7 @@ export default function Home() {
         setOldFilteredBlogsArray([])
         setFilteredBlogsArray([])
 
-        getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+        getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate")))
         .then((data) => {
           setOldFilteredBlogsArray(data.docs.map((item) => {
             return { ...item.data(), id: item.id }
@@ -78,7 +78,7 @@ export default function Home() {
         setFilteredBlogsArray([])
         setOldFilteredBlogsArray([])
 
-        getDocs(query(collection(database, 'blogs'), orderBy("filterDate")))
+        getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate")))
         .then((data) => {
           setOldFilteredBlogsArray(data.docs.map((item) => {
             return { ...item.data(), id: item.id }
@@ -121,8 +121,13 @@ export default function Home() {
   }, [search]);
 
   
+  if (fireUsers !== null) {
   return (
-    <div className="w-3/4 mx-auto flex justify-between py-8 gap-12 flex-col-reverse md:flex-row md:h-screen">
+    <>
+    <Head>  
+      <title>Acatay</title>
+    </Head>
+    <div className="w-3/4 mx-auto flex justify-between py-8 gap-12 flex-col-reverse md:flex-row md:h-[85vh]">
       <div className="flex flex-col gap-6 md:gap-12 w-full relative md:overflow-y-scroll md:w-3/4">
         
         <div className="flex flex-col bg-white justify-center gap-4 py-5">
@@ -133,9 +138,9 @@ export default function Home() {
             <option value="oldest">
                 Sort by Oldest
             </option>
-            <option value="popular">
+            {/* <option value="popular">
                 Sort by Popular
-            </option>
+            </option> */}
           </select>
 
           <span className="text-gray-800"><b>{filteredBlogsArray.length}</b> {filteredBlogsArray.length === 1 ? "blog" : "blogs"} found</span>
@@ -149,26 +154,26 @@ export default function Home() {
           <div className="flex justify-between gap-9 items-center" key={blog.id}>
             <Link href={"/blogs/" + blog.link}>
               <a className="w-24 md:w-48 flex items-center justify-center h-48">
-                <img src={"/" + blog.image} className="object-cover rounded-xl h-24 w-full md:h-full" />
+                <Image width="200px" height="200px" src={blog.image} className="object-cover rounded-xl md:h-full" alt="" />
               </a>
             </Link>
             <div className="flex flex-col w-[70%] justify-center">
-              <span className="text-blue-500 text-xs mb-2">{blog.category}</span>
+            <span className="text-black border-2 font-bold uppercase border-black w-fit px-3 py-[5px] text-xs mb-2">{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</span>
               <Link href={"/blogs/" + blog.link}>
                 <a className="text-2xl font-bold mb-1">{blog.title}</a>
               </Link>
               <p className="text-gray-400 text-sm mb-6">{blog.shortContent && blog.shortContent.length > 200 ? blog.shortContent.slice(0, 200) + "..." : blog.shortContent}</p>
               <div className="flex justify-start rounded-lg items-center gap-3">
-                <Link href="#">
-                  <a>
-                    <img src="https://via.placeholder.com/520x520" className="w-8 h-8 rounded-full cursor-pointer" />
+                <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
+                  <a className="flex items-center">
+                    <Image width="32px" height="32px" src={fireUsers.find(user => user.uid === blog.author).imageUrl} className="rounded-full cursor-pointer" alt="" />
                   </a>
                 </Link>
                 <div className="flex flex-col justify-center">
-                  <Link href="#">
-                    <a className="text-sm font-semibold text-gray-600">Kadir Yılmaz</a>
+                  <Link href={"/users/" + fireUsers.find(user => user.uid === blog.author).link}>
+                    <a className="text-sm font-semibold text-gray-600">{fireUsers.find(user => user.uid === blog.author).displayName}</a>
                   </Link>
-                  <span className="text-xs text-gray-400">{blog.date}</span>
+                  <span className="text-xs text-gray-400">{dayjs.unix(blog.createdAt.seconds).fromNow()}</span>
                 </div>
               </div>
             </div>
@@ -185,10 +190,10 @@ export default function Home() {
 
       <hr className="border-1 border-gray-300 w-full md:hidden" />
       
-      <sidebar className="w-full flex flex-col gap-14 md:w-1/4">
+      <div className="w-full flex flex-col gap-14 md:w-1/4">
         <div className="w-full h-10 relative flex items-center">
-          <i className="fa-solid fa-magnifying-glass absolute left-4"></i>
-          <input type="text" className="w-full h-full py-4 pl-11 bg-gray-100 rounded-xl focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <GrSearch className="absolute left-4 w-4" />
+          <input type="text" className="w-full h-full py-4 pl-11 bg-gray-100 text-sm pr-2 rounded-xl focus:outline-none" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         
         <div className="">
@@ -226,14 +231,16 @@ export default function Home() {
             {categoriesArray.map(category =>
               <Link href={"/categories/" + category.link} key={category.id}>
                 <a className="flex items-center gap-2 group">
-                  <img src={"/" + category.image} alt="" className="w-5" />
+                  <Image width="20px" height="20px" src={category.image} alt="" className="object-cover" />
                   <span className="text-sm text-gray-600 group-hover:text-gray-900">{category.name}</span>
                 </a> 
               </Link>
             )}
           </div>
         </div>
-      </sidebar>
+      </div>
     </div>
+    </>
   )
+            }
 }
