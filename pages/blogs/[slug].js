@@ -71,11 +71,13 @@ export default function BlogDetails() {
           <div className='w-[60%] mx-auto flex flex-col items-center my-16 gap-1'>
               <Image width="800px" height="400px" src={blog.image} className="rounded object-cover" alt="" />
               <div className='flex items-center justify-center gap-3 text-gray-400 text-sm mt-9'>
-                <b>{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</b>
+                <Link href={categoriesArray.find(category => category.id === blog.category) ? "/categories/" + categoriesArray.find(category => category.id === blog.category).link : "#"}>
+                  <a className='font-bold'>{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</a>
+                </Link>
                 <div className='bg-gray-500 w-1 h-1 rounded-full'></div>
                 <span>{dayjs.unix(blog.createdAt.seconds).fromNow()}</span>
               </div>
-              <h1 className='text-5xl font-bold text-gray-600 text-left'>{blog.title}</h1>
+              <h1 className='text-5xl font-extrabold text-gray-600 text-left'>{blog.title}</h1>
 
               <div className='flex flex-col mt-4 w-full'>
                 <span className='text-lg text-left'>{blog.shortContent}</span>

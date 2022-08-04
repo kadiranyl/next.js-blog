@@ -78,6 +78,18 @@ export const AuthContextProvider = ({ children }) => {
     });
   }
 
+  const toastInfo = (msg) => {
+    toast.info(msg, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -218,7 +230,7 @@ export const AuthContextProvider = ({ children }) => {
   const handleVerification = async () => {
     try {
       await sendEmailVerification(user)
-      toast.info("Email verification sent to " + user.email)
+      toastInfo("Email verification sent to " + user.email)
       return true
     } catch (err) {
       toastError(err.message)
@@ -251,7 +263,7 @@ export const AuthContextProvider = ({ children }) => {
   const forgotPassword = async (forgotPass) => {
     try {
       await sendPasswordResetEmail(auth, forgotPass)
-      toast.info("Password reset link sent to " + forgotPass)
+      toastInfo("Password reset link sent to " + forgotPass)
       return true
     } catch (err) {
       toastError(err.message)
@@ -308,7 +320,7 @@ export const AuthContextProvider = ({ children }) => {
           })
       })
 
-      toast.info("Image is uploading, don't leave from the page.")
+      toastInfo("Image is uploading, don't leave from the page.")
     } else if (file.size > 3000000) {
       toastError('Image size is too big! (max 3mb)')
     } else if (file.type !== "image/jpeg" || file.type !== "image/jpg" || file.type !== "image/png") {
@@ -341,7 +353,7 @@ export const AuthContextProvider = ({ children }) => {
           })
       })
 
-      toast.info("Image is uploading, don't leave from the page.")
+      toastInfo("Image is uploading, don't leave from the page.")
     } else if (file.size > 3000000) {
       toastError('Image size is too big! (max 3mb)')
     } else if (file.type !== "image/jpeg" || file.type !== "image/jpg" || file.type !== "image/png") {
@@ -372,7 +384,7 @@ export const AuthContextProvider = ({ children }) => {
           })
       })
 
-      toast.info("Image is uploading, don't leave from the page.")
+      toastInfo("Image is uploading, don't leave from the page.")
     } else if (profilePhoto.size > 3000000) {
       toastError('Image size is too big! (max 3mb)')
     } else if (profilePhoto.type !== "image/jpeg" || file.type !== "image/jpg" || file.type !== "image/png") {
@@ -404,7 +416,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories, toastInfo }}>
       {isModalOpen &&
         <Transition appear show={isModalOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={() => setIsModalOpen(false)}>

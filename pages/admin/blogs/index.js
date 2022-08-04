@@ -19,7 +19,7 @@ import Image from 'next/image';
 
 
 export default function AdminBlogs() {
-  const { user, changeBlogThumb, toastSuccess, toastError, categoriesArray, deleteImg } = useAuth()
+  const { user, changeBlogThumb, toastInfo, toastError, categoriesArray, deleteImg } = useAuth()
 
   const router = useRouter()
 
@@ -96,7 +96,7 @@ export default function AdminBlogs() {
         })
       })
 
-      toastSuccess("Image succesfully uploaded.")
+      toastInfo("Image is uploading, don't leave from the page.")
     } else if (file.size > 3000000) {
       updateDoc(doc(firestore, 'blogs', id), {
         image: '/img/defaultBlog.png',
@@ -301,6 +301,9 @@ export default function AdminBlogs() {
 
           <label htmlFor="categories" className='text-sm font-bold'>Select category</label>
           <select name="categories" onChange={(e) => setEditBlogCategory(e.target.value)}>
+            <option value="Select a category" defaultChecked>
+                Select a category
+              </option>
             {categoriesArray.map(category =>
               <option value={category.id} key={category.id}>
                 {category.name}

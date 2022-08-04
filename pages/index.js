@@ -158,7 +158,9 @@ export default function Home(isAdmin) {
               </a>
             </Link>
             <div className="flex flex-col w-[70%] justify-center">
-            <span className="text-black border-2 font-bold uppercase border-black w-fit px-3 py-[5px] text-xs mb-2">{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</span>
+            <Link href={categoriesArray.find(category => category.id === blog.category) ? "/categories/" + categoriesArray.find(category => category.id === blog.category).link : "#"}>
+              <a className="text-black border-2 font-bold uppercase border-black cursor-pointer w-fit px-3 py-[5px] text-xs mb-2">{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</a>
+            </Link>
               <Link href={"/blogs/" + blog.link}>
                 <a className="text-2xl font-bold mb-1">{blog.title}</a>
               </Link>

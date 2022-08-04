@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { firestore, storage } from '../../../lib/firebase';
 import slugify from 'react-slugify';
 import { FaPen } from 'react-icons/fa'
@@ -12,7 +12,7 @@ const { DateTime } = require("luxon");
 
 export default function AdminCategories() {
 
-  const { changeCategoryThumb, user, toastSuccess, toastError, categoriesArray, getCategories } = useAuth()
+  const { changeCategoryThumb, user, toastError, categoriesArray, getCategories, toastInfo } = useAuth()
 
   const router = useRouter()
 
@@ -54,7 +54,7 @@ export default function AdminCategories() {
         })
       })
 
-      toastSuccess("Image succesfully uploaded.")
+      toastInfo("Image is uploading, don't leave from the page.")
     } else if (file.size > 3000000) {
       updateDoc(doc(firestore, 'blogs', id), {
         image: '/img/defaultBlog.png',
