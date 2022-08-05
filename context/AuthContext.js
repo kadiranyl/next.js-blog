@@ -108,12 +108,19 @@ export const AuthContextProvider = ({ children }) => {
 
 
   const date = new Date()
-  const id = fireUsers.length + 1
 
   const signup = (displayName, email, password) => {
+
+    const id = makeid(15)
+
+    getDoc(doc(firestore, "blogs", id))
+    .then((data) => {
+      if (data.exists()) {
+        id = makeid(15)
+      }
+    })
+
     createUserWithEmailAndPassword(auth, email, password)
-
-
       .then(() => {
 
         setDoc(doc(collection(firestore, 'accounts'), auth.currentUser.uid), {
@@ -432,8 +439,22 @@ export const AuthContextProvider = ({ children }) => {
     getLastUsers();
   }, [])
 
+
+
+
+  function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+    charactersLength));
+      }
+      return result;
+    }
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories, toastInfo, lastUsers }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories, toastInfo, lastUsers, makeid }}>
       {isModalOpen &&
         <Transition appear show={isModalOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={() => setIsModalOpen(false)}>

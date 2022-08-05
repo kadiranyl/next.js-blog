@@ -4,7 +4,7 @@ import slugify from 'react-slugify';
 import { FaPen } from 'react-icons/fa'
 import { GrFormClose } from 'react-icons/gr'
 import { useAuth } from '../../../context/AuthContext';
-import { collection, deleteDoc, getDocs, addDoc, updateDoc, doc, query, where, orderBy } from 'firebase/firestore';
+import { collection, deleteDoc, getDocs, addDoc, updateDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
@@ -12,7 +12,7 @@ const { DateTime } = require("luxon");
 
 export default function AdminCategories() {
 
-  const { changeCategoryThumb, user, toastError, categoriesArray, getCategories, toastInfo } = useAuth()
+  const { changeCategoryThumb, user, toastError, categoriesArray, getCategories, toastInfo, makeid } = useAuth()
 
   const router = useRouter()
 
@@ -72,7 +72,17 @@ export default function AdminCategories() {
   const addCategory = (e) => {
     e.preventDefault() //Normalde submit edince ? linkine atıyor ve sayfayı yeniliyor, yenilememesi için bu gerekli
 
-    const id = categoriesArray.length+1
+    const id = makeid(15)
+
+    getDoc(doc(firestore, "blogs", id))
+    .then((data) => {
+      if (data.exists()) {
+        id = makeid(15)
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+    });
+
 
     addDoc(collection(firestore, 'categories'), {
       name: categoryName,

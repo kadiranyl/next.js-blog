@@ -19,7 +19,7 @@ import Image from 'next/image';
 
 
 export default function AdminBlogs() {
-  const { user, changeBlogThumb, toastInfo, toastError, categoriesArray, deleteImg } = useAuth()
+  const { user, changeBlogThumb, toastInfo, toastError, categoriesArray, deleteImg, makeid } = useAuth()
 
   const router = useRouter()
 
@@ -28,7 +28,7 @@ export default function AdminBlogs() {
   const [blogContent, setBlogContent] = useState('')
   const [blogCategory, setBlogCategory] = useState('')
   const [blogsArray, setBlogsArray] = useState([])
-  const [allBlogsArray, setAllBlogsArray] = useState([])
+  const [lastBlog, setLastBlog] = useState([])
   const [editBlogId, setEditBlogId] = useState('')
   const [editBlogTitle, setEditBlogTitle] = useState('')
   const [editBlogShortContent, setEditBlogShortContent] = useState('')
@@ -54,19 +54,7 @@ export default function AdminBlogs() {
 
 
 
-  const getAllBlogs = () => {
-    getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate", "desc")))
-      .then((data) => {
-        setAllBlogsArray(data.docs.map((item) => {
-          return { ...item.data(), id: item.id }
-        }));
-      })
-  }
-  useEffect(() => {
-    if (user) {
-      getAllBlogs();
-    }
-  }, [])
+
 
 
 
@@ -83,7 +71,6 @@ export default function AdminBlogs() {
       getBlogs();
     }
   }, [user])
-
 
   const addBlogThumb = (file, id) => {
     if (file && (file.type === "image/jpeg" || file.type === "image/jpg" || file.type === "image/png") && file.size <= 3000000) {
@@ -126,13 +113,25 @@ export default function AdminBlogs() {
     }
   }
 
-
   const addBlog = (e) => {
     e.preventDefault() //Normalde submit edince ? linkine atıyor ve sayfayı yeniliyor, yenilememesi için bu gerekli
 
-    const id = allBlogsArray.length+1
     const date = new Date()
     
+    const id = makeid(15)
+
+    getDoc(doc(firestore, "blogs", id))
+    .then((data) => {
+      if (data.exists()) {
+        id = makeid(15)
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+    });
+    
+
+
+
 
     addDoc(collection(firestore, 'blogs'), {
       title: blogTitle,

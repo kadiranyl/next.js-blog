@@ -192,8 +192,8 @@ export default function Home(isAdmin) {
                 <a className="flex items-center gap-3 group">
                   <Image width="32px" height="32px" src={user ? user.imageUrl : ""} alt="" className="object-cover rounded-full" />
                   <div className="flex justify-center flex-col">
-                    <span className="text-sm text-gray-600 font-bold group-hover:text-gray-900">{user.displayName}</span>
-                    <span className="text-xs text-gray-400 group-hover:text-gray-500">{dayjs.unix(user.createdAt.seconds).fromNow()}</span>
+                    <span className="text-sm text-gray-600 transition font-bold group-hover:text-gray-900">{user.displayName}</span>
+                    <span className="text-xs text-gray-400 transition group-hover:text-gray-500">{dayjs.unix(user.createdAt.seconds).fromNow()}</span>
                   </div>
                 </a> 
               </Link>
