@@ -15,11 +15,12 @@ import {
 import { auth, firestore, storage } from '../lib/firebase'
 import { toast } from 'react-toastify';
 import { Dialog, Transition } from '@headlessui/react'
-import { collection, setDoc, doc, getDocs, updateDoc, getDoc, query, orderBy } from 'firebase/firestore';
+import { collection, setDoc, doc, getDocs, updateDoc, getDoc, query, orderBy, limit } from 'firebase/firestore';
 import slugify from 'react-slugify';
 import { useRouter } from 'next/router';
 import BounceLoader from "react-spinners/BounceLoader";
 import { getDownloadURL, ref, uploadBytesResumable, deleteObject } from 'firebase/storage';
+const { DateTime } = require("luxon");
 
 
 const AuthContext = createContext({})
@@ -35,6 +36,7 @@ export const AuthContextProvider = ({ children }) => {
   const [progress, setProgress] = useState(0)
   const [uploadedImgUrl, setUploadedImgUrl] = useState(null)
   const [categoriesArray, setCategoriesArray] = useState([])
+  const [lastUsers, setLastUsers] = useState([])
 
 
 
@@ -129,6 +131,7 @@ export const AuthContextProvider = ({ children }) => {
             instagram: null,
             twitter: null,
           },
+          filterDate: DateTime.now().toUnixInteger(),
         })
 
         updateProfile(auth.currentUser, { displayName: displayName, photoURL: '/img/defaultUser.jpeg' })
@@ -415,8 +418,22 @@ export const AuthContextProvider = ({ children }) => {
     getCategories();
   }, [])
 
+
+
+  const getLastUsers = () => {
+    getDocs(query(collection(firestore, 'accounts'), orderBy("filterDate", "desc"), limit(5)))
+      .then((data) => {
+        setLastUsers(data.docs.map((item) => {
+          return { ...item.data(), id: item.id }
+        }));
+      })
+  }
+  useEffect(() => {
+    getLastUsers();
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories, toastInfo }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, update, handleVerification, handlePassUpdate, fireUser, fireUsers, socialMediaUpdate, forgotPassword, changeBlogThumb, progress, uploadedImgUrl, uploadProfileImage, toastSuccess, toastError, changeCategoryThumb, categoriesArray, deleteImg, getCategories, toastInfo, lastUsers }}>
       {isModalOpen &&
         <Transition appear show={isModalOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={() => setIsModalOpen(false)}>

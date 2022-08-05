@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import BounceLoader from "react-spinners/BounceLoader";
 import Head from 'next/head';
+import relativeTime from 'dayjs/plugin/relativeTime'
+import dayjs from "dayjs";
 
 import { useAuth } from '../../context/AuthContext';
 import { GrSearch } from 'react-icons/gr'
@@ -12,11 +14,13 @@ import Image from 'next/image';
 import BlogList from '../../components/BlogList';
 import { MdCategory } from 'react-icons/md'
 import { BsFillStarFill } from 'react-icons/bs'
+import { FaUserPlus } from 'react-icons/fa'
 
 
 export default function Category() {
+  dayjs.extend(relativeTime)
 
-  const { fireUsers, categoriesArray } = useAuth()
+  const { fireUsers, categoriesArray, lastUsers } = useAuth()
   
 
     //Blogları çek
@@ -202,7 +206,7 @@ export default function Category() {
               <MdCategory />
               Categories
             </h4>
-            <div className="flex flex-col gap-4 mt-6">
+            <div className="flex flex-col gap-4 mt-4">
               {categoriesArray.map(category =>
                 <Link href={"/categories/" + category.link} key={category.id}>
                   <a className="flex items-center gap-2 group">
@@ -213,6 +217,26 @@ export default function Category() {
               )}
             </div>
           </div>
+
+          <div className="flex flex-col md:overflow-y-scroll">
+          <h4 className="flex items-center gap-2 font-bold">
+            <FaUserPlus />
+            Last Members
+          </h4>
+          <div className="flex flex-col gap-4 mt-4">
+            {lastUsers.map(user =>
+              <Link href={"/users/" + user.link} key={user.id}>
+                <a className="flex items-center gap-3 group">
+                  <Image width="32px" height="32px" src={user ? user.imageUrl : ""} alt="" className="object-cover rounded-full" />
+                  <div className="flex justify-center flex-col">
+                    <span className="text-sm text-gray-600 font-bold group-hover:text-gray-900">{user.displayName}</span>
+                    <span className="text-xs text-gray-400 group-hover:text-gray-500">{dayjs.unix(user.createdAt.seconds).fromNow()}</span>
+                  </div>
+                </a> 
+              </Link>
+            )}
+          </div>
+        </div>
         </sidebar>
       </div>
         </>
