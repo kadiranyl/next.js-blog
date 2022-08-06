@@ -28,7 +28,6 @@ export default function AdminBlogs() {
   const [blogContent, setBlogContent] = useState('')
   const [blogCategory, setBlogCategory] = useState('')
   const [blogsArray, setBlogsArray] = useState([])
-  const [lastBlog, setLastBlog] = useState([])
   const [editBlogId, setEditBlogId] = useState('')
   const [editBlogTitle, setEditBlogTitle] = useState('')
   const [editBlogShortContent, setEditBlogShortContent] = useState('')
@@ -37,10 +36,8 @@ export default function AdminBlogs() {
   const [editBlog, setEditBlog] = useState()
   const [blogImage, setBlogImage] = useState(null)
   const [blog, setBlog] = useState()
-  const [newBlogId, setNewBlogId] = useState()
   const [progress, setProgress] = useState(0)
   const [showProgress, setShowProgress] = useState(false)
-  const [iid, setIid] = useState()
 
 
 

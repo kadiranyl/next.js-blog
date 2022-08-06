@@ -408,7 +408,7 @@ export const AuthContextProvider = ({ children }) => {
 
     // Delete the file
     deleteObject(desertRef).catch((error) => {
-      toastError(error.message)
+      
     });
   }
 
