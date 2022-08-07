@@ -51,8 +51,6 @@ export default function Home() {
 
     switch (e) {
       case "newest":
-        setOldFilteredBlogsArray([])
-        setFilteredBlogsArray([])
 
         getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate")))
         .then((data) => {
@@ -66,8 +64,6 @@ export default function Home() {
         break;
 
       case "oldest":
-        setFilteredBlogsArray([])
-        setOldFilteredBlogsArray([])
 
         getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate")))
         .then((data) => {

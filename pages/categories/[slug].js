@@ -74,8 +74,6 @@ export default function Category() {
   
       switch (e) {
         case "newest":
-          setOldFilteredBlogsArray([])
-          setFilteredBlogsArray([])
   
           if (category !== '') {
             getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
@@ -91,8 +89,6 @@ export default function Category() {
           break;
   
         case "oldest":
-          setFilteredBlogsArray([])
-          setOldFilteredBlogsArray([])
   
           if (category !== '') {
             getDocs(query(collection(firestore, 'blogs'), orderBy("filterDate"), where("category", "==", category.id)))
