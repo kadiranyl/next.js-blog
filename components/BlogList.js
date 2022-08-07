@@ -33,7 +33,7 @@ export default function BlogList({filteredBlogsArray, fireUsers, categoriesArray
         <div className="flex flex-col gap-9">
         
         {filteredBlogsArray.map(blog => (
-          <div className="flex justify-between gap-9 items-center" key={blog.id}>
+          <div className="flex justify-start gap-9 items-center" key={blog.id}>
             <Link href={"/blogs/" + blog.link}>
               <a className="w-24 md:w-48 flex items-center justify-center h-48">
                 <Image width="200px" height="200px" src={blog.image} className="object-cover rounded-xl md:h-full" alt="" />
