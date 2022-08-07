@@ -30,16 +30,16 @@ export default function BlogList({filteredBlogsArray, fireUsers, categoriesArray
         </div>
 
     {filteredBlogsArray.length>0 ?
-        <div className="flex flex-col gap-9">
+        <div className="flex flex-col gap-12 md:gap-9">
         
         {filteredBlogsArray.map(blog => (
-          <div className="flex justify-start gap-9 items-center" key={blog.id}>
+          <div className="flex justify-start flex-col gap-6 md:flex-row md:gap-9 items-center" key={blog.id}>
             <Link href={"/blogs/" + blog.link}>
-              <a className="w-24 md:w-48 flex items-center justify-center h-48">
-                <Image width="200px" height="200px" src={blog.image} className="object-cover rounded-xl md:h-full" alt="" />
+              <a className="w-full md:w-48 flex items-center justify-center h-48">
+                <Image width={400} height={250} src={blog.image} className="object-cover w-full rounded-xl md:h-full" alt="" />
               </a>
             </Link>
-            <div className="flex flex-col w-[70%] justify-center">
+            <div className="flex flex-col w-full md:w-[70%] justify-center">
             <Link href={categoriesArray.find(category => category.id === blog.category) ? "/categories/" + categoriesArray.find(category => category.id === blog.category).link : "#"}>
               <a className="text-black border-2 font-bold uppercase border-black cursor-pointer w-fit px-3 py-[5px] text-xs mb-2">{categoriesArray.find(category => category.id === blog.category) ? categoriesArray.find(category => category.id === blog.category).name : "Deleted Category"}</a>
             </Link>

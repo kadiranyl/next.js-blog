@@ -113,7 +113,7 @@ export default function Home() {
     <Head>  
       <title>Acatay</title>
     </Head>
-    <div className="w-3/4 md:w-full mx-auto flex justify-between py-8 gap-12 flex-col-reverse md:flex-row md:h-[85vh]">
+    <div className="w-3/4 md:w-full mx-auto flex justify-between py-8 gap-12 flex-col md:flex-row md:h-[85vh]">
       
       <Sidebar search={search} setSearch={setSearch} categoriesArray={categoriesArray} lastUsers={lastUsers} />
       
