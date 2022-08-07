@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
-import { app, firestore } from '../../lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { firestore } from '../../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import { useState, useEffect } from "react";
 import BounceLoader from "react-spinners/BounceLoader";
 import { useAuth } from '../../context/AuthContext';

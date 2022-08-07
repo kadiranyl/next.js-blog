@@ -428,7 +428,7 @@ export const AuthContextProvider = ({ children }) => {
 
 
   const getLastUsers = () => {
-    getDocs(query(collection(firestore, 'accounts'), orderBy("filterDate", "desc"), limit(5)))
+    getDocs(query(collection(firestore, 'accounts'), orderBy("filterDate", "desc"), limit(10)))
       .then((data) => {
         setLastUsers(data.docs.map((item) => {
           return { ...item.data(), id: item.id }

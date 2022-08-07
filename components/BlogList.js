@@ -4,13 +4,31 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import Image from "next/image";
 // import 'dayjs/locale/tr'
 
-export default function BlogList({filteredBlogsArray, fireUsers, categoriesArray}) {
+export default function BlogList({filteredBlogsArray, fireUsers, categoriesArray, changeFilter}) {
     dayjs.extend(relativeTime)
 
     // dayjs.locale('tr') 
 
   return (
     <>
+      <div className="flex flex-col gap-6 md:gap-12 w-full relative md:overflow-y-scroll md:w-[70%] md:pr-32">
+        
+        <div className="flex flex-col bg-white justify-center gap-4 py-5">
+          <select className="w-fit px-4 bg-gray-100 rounded-lg py-2 focus:outline-none" onChange={(e) => changeFilter(e.target.value)}>
+            <option value="newest">
+                Sort by Newest
+            </option>
+            <option value="oldest">
+                Sort by Oldest
+            </option>
+            {/* <option value="popular">
+                Sort by Popular
+            </option> */}
+          </select>
+
+          <span className="text-gray-800"><b>{filteredBlogsArray.length}</b> {filteredBlogsArray.length === 1 ? "blog" : "blogs"} found</span>
+        </div>
+
     {filteredBlogsArray.length>0 ?
         <div className="flex flex-col gap-9">
         
@@ -50,6 +68,7 @@ export default function BlogList({filteredBlogsArray, fireUsers, categoriesArray
         : 
           <span className="font-semibold text-gray-800">Sorry, no blog found.</span>
         }
+      </div>
     </>
   )
 }
