@@ -78,34 +78,35 @@ export default function AdminCategories() {
     .then((data) => {
       if (data.exists()) {
         id = makeid(15)
+        toastError("An error happened, please refresh the page.")
+      } else {
+        addDoc(collection(firestore, 'categories'), {
+          name: categoryName,
+          id: id,
+          createdAt: Date(),
+          image: categoryImage === null && '/img/defaultBlog.png',
+          link: slugify(categoryName.toLocaleLowerCase()) + "-" + id,
+          filterDate: DateTime.now().toUnixInteger(),
+        })
+    
+        setCategoryName('')
+        
+    
+        getDocs(query(collection(firestore, 'categories'), where("id", "==", id)))
+          .then((data) => {
+            data.docs.map((item) => 
+              categoryImage !== null && (
+                addCategoryThumb(categoryImage, item.id)
+              )
+            )})
+    
+    
+        getCategories()
       }
     }).catch((error) => {
       console.log("Error getting document:", error);
     });
 
-
-    addDoc(collection(firestore, 'categories'), {
-      name: categoryName,
-      id: id,
-      createdAt: Date(),
-      image: categoryImage === null && '/img/defaultBlog.png',
-      link: slugify(categoryName.toLocaleLowerCase()) + "-" + id,
-      filterDate: DateTime.now().toUnixInteger(),
-    })
-
-    setCategoryName('')
-    
-
-    getDocs(query(collection(firestore, 'categories'), where("id", "==", id)))
-      .then((data) => {
-        data.docs.map((item) => 
-          categoryImage !== null && (
-            addCategoryThumb(categoryImage, item.id)
-          )
-        )})
-
-
-    getCategories()
   }
 
 

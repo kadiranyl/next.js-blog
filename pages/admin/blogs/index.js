@@ -121,50 +121,44 @@ export default function AdminBlogs() {
     .then((data) => {
       if (data.exists()) {
         id = makeid(15)
+        toastError("An error happened, please refresh the page.")
+      } else {
+        addDoc(collection(firestore, 'blogs'), {
+          title: blogTitle,
+          shortContent: blogShortContent,
+          content: blogContent,
+          category: blogCategory,
+          id: id,
+          createdAt: date,
+          filterDate: DateTime.now().toUnixInteger(),
+          image: blogImage === null && '/img/defaultBlog.png',
+          link: slugify(blogTitle.toLocaleLowerCase()) + "-" + id,
+          author: user.uid
+        })
+    
+    
+        setBlogTitle('')
+        setBlogShortContent('')
+        setBlogContent('')
+        setBlogCategory('')
+    
+    
+    
+        getBlogs() //Yeni not eklendiğinde bu fonksiyon çalışacak
+    
+        
+        getDocs(query(collection(firestore, 'blogs'), where("id", "==", id)))
+        .then((data) => {
+          data.docs.map((item) => 
+            blogImage !== null && (
+              addBlogThumb(blogImage, item.id)
+            )
+          )})
       }
     }).catch((error) => {
       console.log("Error getting document:", error);
     });
     
-
-
-
-
-    addDoc(collection(firestore, 'blogs'), {
-      title: blogTitle,
-      shortContent: blogShortContent,
-      content: blogContent,
-      category: blogCategory,
-      id: id,
-      createdAt: date,
-      filterDate: DateTime.now().toUnixInteger(),
-      image: blogImage === null && '/img/defaultBlog.png',
-      link: slugify(blogTitle.toLocaleLowerCase()) + "-" + id,
-      author: user.uid
-    })
-
-
-    setBlogTitle('')
-    setBlogShortContent('')
-    setBlogContent('')
-    setBlogCategory('')
-
-
-
-    getBlogs() //Yeni not eklendiğinde bu fonksiyon çalışacak
-
-    
-    getDocs(query(collection(firestore, 'blogs'), where("id", "==", id)))
-    .then((data) => {
-      data.docs.map((item) => 
-        blogImage !== null && (
-          addBlogThumb(blogImage, item.id)
-        )
-      )})
-
-
-
-
 
 
   }
