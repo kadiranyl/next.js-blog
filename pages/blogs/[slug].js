@@ -71,12 +71,13 @@ export default function BlogDetails() {
 
       const id = makeid(15)
 
-      blogsArray.map(blog => {
+      blogsArray.map(blogg => {
         
-          if (blog.comments.length > 0 && blog.comments.id === id) {
+          if (blogg.comments.length > 0 && blogg.comments.id === id) {
             toastError("An error happened, please refresh the page.")
           }
           else {
+            console.log(blog.id);
             updateDoc(doc(firestore, 'blogs', blog.id), {
               comments: arrayUnion(
                 {
@@ -177,7 +178,7 @@ export default function BlogDetails() {
                   <div className='flex items-center justify-between w-full gap-4'>
                     <Image width="42px" height="42px" src={user.photoURL} alt="" className='rounded-full object-cover' />             
                     <form className='flex flex-1 gap-4 items-center' onSubmit={(e) => addComment(e)}>
-                      <textarea className='h-14 w-full py-2 px-4 text-sm border border-1 border-gray-300 rounded-md focus:outline-none' placeholder='Add a comment...' value={comment} onChange={(e) => setComment(e.target.value)} />
+                      <textarea className='h-14 w-full py-2 px-4 text-sm border border-1 border-gray-300 rounded-md focus:outline-none' placeholder='Add a comment...' value={comment} onChange={(e) => setComment(e.target.value)} required />
                       <button type='submit' className='text-xs border border-1 border-gray-400 py-2 rounded-md text-gray-400 px-6 transition-all duration-300 hover:bg-gray-400 hover:text-white'>Send</button>
                     </form>
                   </div>
