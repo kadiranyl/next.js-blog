@@ -1,22 +1,24 @@
 import { useRouter } from 'next/router'
 import { firestore } from '../../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, arrayUnion, getDoc } from 'firebase/firestore';
 import { useState, useEffect } from "react";
 import BounceLoader from "react-spinners/BounceLoader";
 import { useAuth } from '../../context/AuthContext';
 import Head from 'next/head';
+const { DateTime } = require("luxon");
 
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { AiFillLike } from 'react-icons/ai';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function BlogDetails() {
   dayjs.extend(relativeTime)
 
-    const { fireUsers, categoriesArray } = useAuth()
+    const { fireUsers, categoriesArray, user, toastSuccess, makeid, toastError } = useAuth()
 
 
     //Blogları çek
@@ -24,6 +26,7 @@ export default function BlogDetails() {
     const [blog, setBlog] = useState('')
     const [loader, setLoader] = useState(true)
     const [noBlog, setNoBlog] = useState(false)
+    const [comment, setComment] = useState('')
 
 
     const getBlogs = () => {
@@ -61,6 +64,49 @@ export default function BlogDetails() {
       }
     }, [blog])
 
+    const date = new Date()
+
+    const addComment = (e) => {
+      e.preventDefault()
+
+      const id = makeid(15)
+
+      blogsArray.map(blog => {
+        
+          if (blog.comments.length > 0 && blog.comments.id === id) {
+            toastError("An error happened, please refresh the page.")
+          }
+          else {
+            updateDoc(doc(firestore, 'blogs', blog.id), {
+              comments: arrayUnion(
+                {
+                  uid: user.uid,
+                  comment: comment,
+                  like: [],
+                  filterDate: DateTime.now().toUnixInteger(),
+                  createdAt: date,
+                  id
+                }
+              )
+            })
+            .then(() => {
+              setComment('')
+              getBlogs()
+            })
+          }
+      })
+
+
+    }
+
+    const likeComment = async (id) => {
+
+
+
+
+
+    }
+    
     if (blogsArray.map(blog => blog.link == slug) && blog) {
   
       return (
@@ -85,7 +131,9 @@ export default function BlogDetails() {
                 <div className='text-gray-500 mt-6 text-left text-sm blog-content' dangerouslySetInnerHTML={{ __html: blog.content }}></div>
               </div>
 
-              <div className='w-full flex-col md:flex-row md:w-[60%] py-8 gap-6 flex items-center justify-start px-8 mt-16 bg-gray-100 rounded-xl'>
+              <hr className='w-full bg-gray-300 my-16'/>
+
+              <div className='w-full flex-col md:flex-row md:w-[60%] py-8 gap-6 flex items-center justify-start px-8 bg-gray-100 rounded-xl'>
                 <Link href={fireUsers.find(user => user.uid === blog.author) ? "/users/" + fireUsers.find(user => user.uid === blog.author).link : "#"}>
                   <Image width="72px" height="72px" src={fireUsers.find(user => user.uid === blog.author) ? fireUsers.find(user => user.uid === blog.author).imageUrl : "/img/defaultUser.jpeg"} alt="" className='rounded-xl object-cover cursor-pointer' />
                 </Link>
@@ -120,6 +168,49 @@ export default function BlogDetails() {
                     )}
                   </div>
                 </div>
+              </div>
+
+              <hr className='w-full bg-gray-300 my-16'/>
+
+              <div className=' flex flex-col gap-6 w-full'>
+                {user && (
+                  <div className='flex items-center justify-between w-full gap-4'>
+                    <Image width="42px" height="42px" src={user.photoURL} alt="" className='rounded-full object-cover' />             
+                    <form className='flex flex-1 gap-4 items-center' onSubmit={(e) => addComment(e)}>
+                      <textarea className='h-14 w-full py-2 px-4 text-sm border border-1 border-gray-300 rounded-md focus:outline-none' placeholder='Add a comment...' value={comment} onChange={(e) => setComment(e.target.value)} />
+                      <button type='submit' className='text-xs border border-1 border-gray-400 py-2 rounded-md text-gray-400 px-6 transition-all duration-300 hover:bg-gray-400 hover:text-white'>Send</button>
+                    </form>
+                  </div>
+                )}
+
+                {blog.comments.map(comment => (
+                <div className='flex items-center justify-start w-full gap-4' key={comment.id}>
+                  <Link href={fireUsers.find(user => user.uid === comment.uid) ? "/users/" + fireUsers.find(user => user.uid === comment.uid).link : "#"}>
+                    <a>
+                      <Image width="42px" height="42px" src={fireUsers.find(user => user.uid === comment.uid) ? fireUsers.find(user => user.uid === comment.uid).imageUrl : "/img/defaultUser.jpeg"} alt="" className='rounded-full object-cover cursor-pointer' />
+                    </a>
+                  </Link>
+                  <div className='flex flex-col justify-center gap-2 flex-1'>
+                    <div className='flex items-center gap-2'>
+                      <Link href={fireUsers.find(user => user.uid === comment.uid) ? "/users/" + fireUsers.find(user => user.uid === comment.uid).link : "#"}>
+                        <a className='font-semibold'>{fireUsers.find(user => user.uid === comment.uid) ? fireUsers.find(user => user.uid === comment.uid).displayName : "Deleted Account"}</a>
+                      </Link>
+                      <div className='w-1 h-1 rounded-full bg-gray-400'></div>
+                      <span className='text-gray-400 text-xs'>{dayjs.unix(comment.createdAt.seconds).fromNow()}</span>
+                    </div>
+                    <p className='text-gray-400 text-sm'>{comment.comment}</p>
+                    <div className='flex items-center gap-3'>
+                      <button type='button' className='flex items-center gap-2' onClick={() => likeComment(comment.id)}>
+                        <AiFillLike className='fill-gray-500' />
+                        <span className='text-gray-500 text-sm'>{comment.like.length} Likes</span>
+                      </button>
+                      <div className='w-1 h-1 rounded-full bg-gray-500'></div>
+                      <span className='text-gray-500 text-sm'>Share</span>
+                    </div>
+                  </div>
+                </div>
+                ))}
+                
               </div>
           </div>
           </>

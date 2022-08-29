@@ -133,7 +133,8 @@ export default function AdminBlogs() {
           filterDate: DateTime.now().toUnixInteger(),
           image: blogImage === null && '/img/defaultBlog.png',
           link: slugify(blogTitle.toLocaleLowerCase()) + "-" + id,
-          author: user.uid
+          author: user.uid,
+          comments: []
         })
     
     
