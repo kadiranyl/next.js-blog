@@ -196,8 +196,20 @@ export default function BlogDetails() {
                       <Link href={fireUsers.find(user => user.uid === comment.uid) ? "/users/" + fireUsers.find(user => user.uid === comment.uid).link : "#"}>
                         <a className='font-semibold'>{fireUsers.find(user => user.uid === comment.uid) ? fireUsers.find(user => user.uid === comment.uid).displayName : "Deleted Account"}</a>
                       </Link>
+                      {comment.uid === blog.author ? (
+                        <>
+                          <div className='w-1 h-1 rounded-full bg-gray-400'></div>
+                          <span className='text-gray-400 text-xs border border-1 border-gray-400 px-2 py-1'>Writer of This Blog</span>
+                        </>
+                      ) : ((fireUsers.find(user => user.uid === comment.uid) && fireUsers.find(user => user.uid === comment.uid).isAdmin)) ? (
+                        <>
+                          <div className='w-1 h-1 rounded-full bg-gray-400'></div>
+                          <span className='text-gray-400 text-xs border border-1 border-gray-400 px-2 py-1'>Writer</span>
+                        </>
+                      ) : ""}
                       <div className='w-1 h-1 rounded-full bg-gray-400'></div>
                       <span className='text-gray-400 text-xs'>{dayjs.unix(comment.createdAt.seconds).fromNow()}</span>
+
                     </div>
                     <p className='text-gray-400 text-sm'>{comment.comment}</p>
                     <div className='flex items-center gap-3'>
